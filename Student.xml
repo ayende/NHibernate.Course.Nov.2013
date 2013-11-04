@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<license id="82d1e418-868f-45a3-a888-e5ec17fa751c" expiration="2014-01-04T00:00:00.0000000" type="Subscription" prof="NHProf" version="2">
+  <name>Student</name>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+      <Reference URI="">
+        <Transforms>
+          <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+        </Transforms>
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <DigestValue>CDDfozpuuM7NpkHsrh4ns5z9uTU=</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>YDYAMoXUBhN92QUL2lLHpsFMR1TrVxfBUt/kPR9KF9VzI85aJGGWHjjeWjUoeAlNdssRBqNIaXBbtOltbgqdth+3m4ba2r0uYrhOPHsqiaAD0xqpeZkq9cgiYmr811NVfCygxH1s2BTen/qrH0/fq+BwXvzgcCqoy4lCiXj3n24=</SignatureValue>
+  </Signature>
+</license>
