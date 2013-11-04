@@ -3,21 +3,22 @@
 				   assembly="NovCoure"
 				   namespace="NovCoure.Model">
 
-	<class name="Cat" table="Cats">
-    
+	<class name="Animal" abstract="true" table="Animals" discriminator-value="NULL">
 		<id name="Id">
 			<generator class="identity"/>
 		</id>
-		<property name="Annoying"/>
+
+		<discriminator column="Type"/>
+
+		<subclass name="Cat" discriminator-value="Cat">
+			<property name="Annoying"/>
+		</subclass>
+
+		<subclass name="Dog" discriminator-value="Dog">
+			<property name="Barks"/>
+
+		</subclass>
 
 	</class>
 
-	<class name="Dog" table="Dogs">
-
-		<id name="Id">
-			<generator class="identity"/>
-		</id>
-		<property name="Barks"/>
-
-	</class>
 </hibernate-mapping>
