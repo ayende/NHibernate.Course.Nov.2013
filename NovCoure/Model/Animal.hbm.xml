@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NovCoure"
+				   namespace="NovCoure.Model">
+
+	<class name="Cat" table="Cats">
+    
+		<id name="Id">
+			<generator class="identity"/>
+		</id>
+		<property name="Annoying"/>
+
+	</class>
+
+	<class name="Dog" table="Dogs">
+
+		<id name="Id">
+			<generator class="identity"/>
+		</id>
+		<property name="Barks"/>
+
+	</class>
+</hibernate-mapping>

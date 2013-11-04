@@ -31,12 +31,20 @@ namespace NovCoure
 			using (var session = sessionFactory.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var emp = session.Load<Employee>(1);
 
-				emp.Attributes["oren"] = "eini";
-				emp.Attributes["location"] = "London";
+				session.Save(new Dog {Barks = true});
+				session.Save(new Cat {Annoying = true});
 
-			
+				tx.Commit();
+			}
+
+			using (var session = sessionFactory.OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+
+				session.Query<Animal>().ToList();
+				session.Query<Dog>().ToList();
+				session.Query<Cat>().ToList();
 				tx.Commit();
 			}
 		}

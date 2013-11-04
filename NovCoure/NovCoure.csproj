@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\NHibernateProfilerBootstrapper.cs" />
+    <Compile Include="Model\Animal.cs" />
     <Compile Include="Model\Building.cs" />
     <Compile Include="Model\Employee.cs" />
     <Compile Include="Model\MaintenanceJob.cs" />
@@ -71,6 +72,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Start\NHibernateProfilerBootstrapper.vb" />
+    <EmbeddedResource Include="Model\Animal.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Model\Employee.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
