@@ -10,5 +10,21 @@
 		</id>
 		<property name="Name"/>
 
+
+		<set name="Jobs" table="JobsToEmps">
+			<key column="EmpId"/>
+			<many-to-many class="MaintenanceJob" column="JobId"/>
+		</set>
+
+		<list name="EmergencyPhoneNumbers" table="EmergencyPhoneNumbers">
+			<key column="EmpId"/>
+			<index column="Position"/>
+			<element column="Phone"/>
+		</list>
+		<map name="Attributes" table="Attributes">
+			<key column="EmpId"/>
+			<index column="MapKey" type="String"/>
+			<element column="MapVal" type="String"/>
+		</map>
 	</class>
 </hibernate-mapping>

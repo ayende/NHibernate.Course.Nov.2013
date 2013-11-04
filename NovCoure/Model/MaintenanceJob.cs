@@ -9,5 +9,6 @@ namespace NovCoure.Model
 		public virtual Building Building { get; set; }
 		public virtual DateTime At { get; set; }
 		public virtual ICollection<Employee> By { get; set; }
+		public virtual IDictionary<string,Employee> EmpsByWork { get; set; }
 	}
 }
