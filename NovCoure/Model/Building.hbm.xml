@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-				   assembly="NovCourse"
-				   namespace="NovCourse.Model">
+				   assembly="NovCoure"
+				   namespace="NovCoure.Model">
 
 	<class name="Building" table="Buildings">
     
