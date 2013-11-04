@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
+using NHibernate.Impl;
 using NHibernate.Linq;
+using NHibernate.SqlCommand;
 using NovCoure.Model;
 
 namespace NovCoure
@@ -16,6 +19,7 @@ namespace NovCoure
 			App_Start.NHibernateProfilerBootstrapper.PreStart();
 
 			var cfg = new Configuration();
+			//cfg.SetInterceptor(new DontBeSlow());
 			//cfg.SetNamingStrategy(new DbaAreFoolsToTryToUnderstandMe());
 			cfg.DataBaseIntegration(properties =>
 			{
@@ -28,10 +32,9 @@ namespace NovCoure
 
 			var sessionFactory = cfg.BuildSessionFactory();
 
-			using (var session = sessionFactory.OpenSession())
+			using (var session = sessionFactory.OpenSession(new CountQueries()))
 			using (var tx = session.BeginTransaction())
 			{
-
 				session.Save(new Dog
 				{
 					Barks = true,
@@ -48,7 +51,7 @@ namespace NovCoure
 				tx.Commit();
 			}
 
-			using (var session = sessionFactory.OpenSession())
+			using (var session = sessionFactory.OpenSession(new CountQueries()))
 			using (var tx = session.BeginTransaction())
 			{
 
@@ -91,6 +94,28 @@ namespace NovCoure
 		{
 			return columnName;
 		}
+	}
+
+	public class CountQueries : EmptyInterceptor
+	{
+		private int count = 0;
+		public override SqlString OnPrepareStatement(SqlString sql)
+		{
+			if (++count > 2)
+				throw new InvalidOperationException("Too many queries");
+			return base.OnPrepareStatement(sql);
+		}
+	}
+
+	public class DontBeSlow : EmptyInterceptor
+	{
+		public override SqlString OnPrepareStatement(SqlString sql)
+		{
+			if (sql.LastIndexOfCaseInsensitive("Cats") != -1)
+				throw new InvalidOperationException("Can't don't like queries, curisoity killed the cat");
+			return base.OnPrepareStatement(sql);
+		}
+
 	}
 }
 
