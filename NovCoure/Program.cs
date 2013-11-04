@@ -32,8 +32,18 @@ namespace NovCoure
 			using (var tx = session.BeginTransaction())
 			{
 
-				session.Save(new Dog {Barks = true});
-				session.Save(new Cat {Annoying = true});
+				session.Save(new Dog
+				{
+					Barks = true,
+					Home = new Address{City = "London", Street = "Fleet"},
+					Vet = new Address { City = "London", Street = "Summer" },
+				});
+				session.Save(new Cat
+				{
+					Annoying = true,
+					Home = new Address(),
+					Vet = null
+				});
 
 				tx.Commit();
 			}

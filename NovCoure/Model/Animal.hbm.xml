@@ -8,6 +8,22 @@
 			<generator class="hilo"/>
 		</id>
 
+		<component name="Home">
+			<property name="City" column="HomeCity"/>
+			<property name="Street" column="HomeStreet"/>
+		</component>
+
+		<component name="Vet">
+			<property name="City" column="VetCity"/>
+			<property name="Street" column="VetStreet"/>
+		</component>
+
+		<!--<property name="HomeCity"/>
+		<property name="HomeStreet"/>
+
+		<property name="VetCity"/>
+		<property name="VetStreet"/>-->
+
 		<union-subclass name="Dog" table="Dogs">
 			<property name="Barks"/>
 		</union-subclass>
