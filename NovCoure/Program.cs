@@ -16,11 +16,11 @@ namespace NovCoure
 			App_Start.NHibernateProfilerBootstrapper.PreStart();
 
 			var cfg = new Configuration();
-			
+			//cfg.SetNamingStrategy(new DbaAreFoolsToTryToUnderstandMe());
 			cfg.DataBaseIntegration(properties =>
 			{
 				properties.Dialect<MsSql2008Dialect>();
-				properties.SchemaAction = SchemaAutoAction.Update;
+				properties.SchemaAction = SchemaAutoAction.Create;
 				properties.ConnectionString = @"Data Source=.\SqlExpress;Initial Catalog=Jobs;Integrated Security=true";
 			});
 
@@ -57,6 +57,39 @@ namespace NovCoure
 				session.Query<Cat>().ToList();
 				tx.Commit();
 			}
+		}
+	}
+
+	public class DbaAreFoolsToTryToUnderstandMe : INamingStrategy
+	{
+		public string ClassToTableName(string className)
+		{
+			return className;
+		}
+
+		public string PropertyToColumnName(string propertyName)
+		{
+			return propertyName;
+		}
+
+		public string TableName(string tableName)
+		{
+			return "`_" + BitConverter.ToString(Encoding.UTF8.GetBytes(tableName)).Replace("-", "_") + "`";
+		}
+
+		public string ColumnName(string columnName)
+		{
+			return "`_" + BitConverter.ToString(Encoding.UTF8.GetBytes(columnName)).Replace("-", "_") + "`";
+		}
+
+		public string PropertyToTableName(string className, string propertyName)
+		{
+			return className + "_" + propertyName;
+		}
+
+		public string LogicalColumnName(string columnName, string propertyName)
+		{
+			return columnName;
 		}
 	}
 }
