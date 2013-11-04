@@ -3,21 +3,20 @@
 				   assembly="NovCoure"
 				   namespace="NovCoure.Model">
 
-	<class name="Animal" abstract="true" table="Animals" discriminator-value="NULL">
+	<class name="Animal" abstract="true" table="Animals">
 		<id name="Id">
 			<generator class="identity"/>
 		</id>
 
-		<discriminator column="Type"/>
-
-		<subclass name="Cat" discriminator-value="Cat">
-			<property name="Annoying"/>
-		</subclass>
-
-		<subclass name="Dog" discriminator-value="Dog">
+		<joined-subclass name="Dog" table="Dogs">
+			<key column="Id"/>
 			<property name="Barks"/>
+		</joined-subclass>
 
-		</subclass>
+		<joined-subclass name="Cat" table="Cats">
+			<key column="Id"/>
+			<property name="Annoying"/>
+		</joined-subclass>
 
 	</class>
 
