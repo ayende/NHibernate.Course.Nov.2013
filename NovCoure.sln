@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NovCoure", "NovCoure\NovCoure.csproj", "{D094B7F1-71A1-4B2B-A4FC-F9E7E9936C73}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2180F736-4A78-4250-896A-B1D7AEC3C066}"
+	ProjectSection(SolutionItems) = preProject
+		packages\NHibernate.3.3.3.4001\nhibernate-mapping.xsd = packages\NHibernate.3.3.3.4001\nhibernate-mapping.xsd
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

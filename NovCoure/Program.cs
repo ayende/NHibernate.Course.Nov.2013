@@ -18,13 +18,25 @@ namespace NovCoure
 			cfg.DataBaseIntegration(properties =>
 			{
 				properties.Dialect<MsSql2008Dialect>();
+				properties.SchemaAction = SchemaAutoAction.Update;
 				properties.ConnectionString = @"Data Source=.\SqlExpress;Initial Catalog=Jobs;Integrated Security=true";
 			});
 
-			cfg.AddAssembly(typeof (Building).Assembly);
+			cfg.AddAssembly(typeof(Building).Assembly);
 
 			var sessionFactory = cfg.BuildSessionFactory();
 
+			using (var session = sessionFactory.OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				session.Save(new Building
+				{
+					ZipCode = "ECA 123A",
+					Name = "107-110 Fleet St"
+				});
+
+				tx.Commit();
+			}
 
 		}
 	}

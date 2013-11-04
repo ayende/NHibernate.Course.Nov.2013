@@ -9,6 +9,7 @@
 			<generator class="identity"/>
 		</id>
 		<property name="Name"/>
+		<property name="ZipCode"/>
 		
 	</class>
 </hibernate-mapping>
