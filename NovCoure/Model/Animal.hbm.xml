@@ -5,18 +5,16 @@
 
 	<class name="Animal" abstract="true" table="Animals">
 		<id name="Id">
-			<generator class="identity"/>
+			<generator class="hilo"/>
 		</id>
 
-		<joined-subclass name="Dog" table="Dogs">
-			<key column="Id"/>
+		<union-subclass name="Dog" table="Dogs">
 			<property name="Barks"/>
-		</joined-subclass>
+		</union-subclass>
 
-		<joined-subclass name="Cat" table="Cats">
-			<key column="Id"/>
+		<union-subclass name="Cat" table="Cats">
 			<property name="Annoying"/>
-		</joined-subclass>
+		</union-subclass>
 
 	</class>
 
