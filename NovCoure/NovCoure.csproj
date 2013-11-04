@@ -71,7 +71,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Start\NHibernateProfilerBootstrapper.vb" />
-    <EmbeddedResource Include="Model\Building.hbm.xml" />
+    <EmbeddedResource Include="Model\Employee.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Model\MaintenanceJob.hbm.xml" />
+    <EmbeddedResource Include="Model\Building.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

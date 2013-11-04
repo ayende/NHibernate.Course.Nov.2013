@@ -3,19 +3,12 @@
 				   assembly="NovCoure"
 				   namespace="NovCoure.Model">
 
-	<class name="Building" table="Buildings">
+	<class name="Employee" table="Employees">
     
 		<id name="Id">
 			<generator class="identity"/>
 		</id>
 		<property name="Name"/>
-		<property name="ZipCode"/>
-
-		<set name="Jobs" inverse="true">
-			<key column="Building"/>
-			<one-to-many class="MaintenanceJob"/>
-		</set>
-
 
 	</class>
 </hibernate-mapping>
