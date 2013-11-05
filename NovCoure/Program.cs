@@ -40,13 +40,7 @@ namespace NovCoure
 			});
 
 			//cfg.SetListener(ListenerType.Delete, new BarkingDogsWillNotBeDeleted());
-			cfg.SetListener(ListenerType.PreUpdate, new BuildingAuditListener());
-			cfg.SetListener(ListenerType.PreInsert, new BuildingAuditListener());
-			cfg.SetListeners(ListenerType.Delete, new IDeleteEventListener[]
-			{
-				new DefaultBuildingDeleteListener(), 
-				new DefaultDeleteEventListener()
-			});
+			cfg.SetListener(ListenerType.PreUpdate, new AuditChangesListener());
 
 			// secret: make nhibernate faster toggle
 			cfg.SetProperty("default_batch_fetch_size", "15");
@@ -129,11 +123,9 @@ namespace NovCoure
 			using (var session = sessionFactory.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				session.Save(new Building
-				{
-				});
-
-				session.Load<Building>(1).Name += 'a';
+				var building = session.Load<Building>(1);
+				building.ZipCode = "hba";
+				building.Name = "fds";
 
 				tx.Commit();
 			}

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NovCoure"
+				   namespace="NovCoure.Model">
+
+	<class name="AuditEntry" table="AuditEntries">
+		<id name="Id">
+			<generator class="hilo"/>
+		</id>
+		<property name="EntityId"/>
+		<property name="EntityName"/>
+		<property name="Changes"/>
+		<property name="Date"/>
+	</class>
+
+</hibernate-mapping>
