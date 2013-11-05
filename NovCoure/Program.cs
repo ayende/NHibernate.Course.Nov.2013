@@ -127,7 +127,7 @@ namespace NovCoure
 			using (var session = sessionFactory.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				session.Delete(session.Get<Building>(4));
+				session.Delete(session.Get<Building>(5));
 
 				tx.Commit();
 			}
@@ -160,10 +160,12 @@ namespace NovCoure
 			if (building.Id == 1)
 				throw new InvalidOperationException("Cannot delete default");
 
-			foreach (var maintenanceJob in building.Jobs)
-			{
-				maintenanceJob.Building = @event.Session.Load<Building>(1);
-			}
+			@event.Session
+				.CreateQuery("update MaintenanceJob j set j.Building = :new where j.Building = :old ")
+				.SetParameter("old", building)
+				.SetParameter("new", @event.Session.Load<Building>(1))
+				.ExecuteUpdate();
+
 		}
 	}
 	
