@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using NHibernate.Search.Attributes;
 
 namespace NovCoure.Model
 {
+	[Indexed]
 	public class MaintenanceJob
 	{
-		public virtual int Id { get; set; } 
+		[DocumentId]
+		public virtual int Id { get; set; }
+
+		[IndexedEmbedded] 
 		public virtual Building Building { get; set; }
 		public virtual DateTime At { get; set; }
 		public virtual ICollection<Employee> By { get; set; }

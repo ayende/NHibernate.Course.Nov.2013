@@ -10,8 +10,8 @@
 		</id>
 		<property name="Name"/>
 		<property name="ZipCode"/>
-		<property name="CreatedAt"/>
-		<property name="ModifiedAt"/>
+		<!--<property name="CreatedAt"/>
+		<property name="ModifiedAt"/>-->
 
 		<set name="Jobs" inverse="true">
 			<key column="Building"/>

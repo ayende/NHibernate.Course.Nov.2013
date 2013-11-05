@@ -6,9 +6,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
+﻿using System.Data.SQLite;
+﻿using System.Linq;
 using System.Text;
 ﻿using Iesi.Collections;
+﻿using Lucene.Net.Analysis;
 ﻿using NHibernate;
 ﻿using NHibernate.Cache;
 ﻿using NHibernate.Cfg;
@@ -18,8 +20,13 @@ using NHibernate.Dialect;
 ﻿using NHibernate.Impl;
 using NHibernate.Linq;
 ﻿using NHibernate.Persister.Entity;
+﻿using NHibernate.Search;
+﻿using NHibernate.Search.Event;
+﻿using NHibernate.Search.Store;
 ﻿using NHibernate.SqlCommand;
-using NovCoure.Model;
+﻿using NHibernate.Tool.hbm2ddl;
+﻿using NovCoure.Model;
+﻿using Environment = NHibernate.Search.Environment;
 
 namespace NovCoure
 {
@@ -30,17 +37,12 @@ namespace NovCoure
 			App_Start.NHibernateProfilerBootstrapper.PreStart();
 
 			var cfg = new Configuration();
-			cfg.SetInterceptor(new AuditIntercepter());
-			//cfg.SetNamingStrategy(new DbaAreFoolsToTryToUnderstandMe());
 			cfg.DataBaseIntegration(properties =>
 			{
-				properties.Dialect<MsSql2008Dialect>();
-				properties.SchemaAction = SchemaAutoAction.Update;
-				properties.ConnectionString = @"Data Source=localhost\sqlexpress;Initial Catalog=Jobs;Integrated Security=true";
+				properties.Dialect<SQLiteDialect>();
+				properties.ConnectionString = @"Data Source=:memory:";
 			});
-
-			//cfg.SetListener(ListenerType.Delete, new BarkingDogsWillNotBeDeleted());
-			cfg.SetListener(ListenerType.PreUpdate, new AuditChangesListener());
+			cfg.AddAssembly(typeof(Building).Assembly);
 
 			// secret: make nhibernate faster toggle
 			cfg.SetProperty("default_batch_fetch_size", "15");
@@ -51,87 +53,35 @@ namespace NovCoure
 				properties.Provider<HashtableCacheProvider>();
 			});
 
-			cfg.AddAssembly(typeof (Building).Assembly);
-
 			var sessionFactory = cfg.BuildSessionFactory();
 
-			//using (var session = sessionFactory.OpenSession(new CountQueries()))
-			//using (var tx = session.BeginTransaction())
-			//{
-			//	var dog = new Dog
-			//	{
-			//		Barks = true,
-			//		Expiration = DateTime.Now,
-			//		RegistrationId = "!23213",
-			//		Attributes = new Hashtable
-			//		{
-			//			{"Fubar", "hi"}
-			//		},
-			//		Home = new Address { City = "London", Street = "Fleet" },
-			//		Vet = new Address { City = "London", Street = "Summer" },
-			//	};
-			//	session.Save(dog);
-			//	var building = new Building { Name = "Building 1" };
-			//	session.Save(building);
-			//	var emp = new Employee
-			//	{
-			//		Name = "Employee 1",
-			//		EmergencyPhoneNumbers = new List<string>(),
-			//		AssoicatedWith = dog
-			//	};
-			//	emp.EmergencyPhoneNumbers.Add("121");
-			//	emp.EmergencyPhoneNumbers.Add("122");
-			//	emp.EmergencyPhoneNumbers.Add("124");
-			//	emp.EmergencyPhoneNumbers.Add("125");
-			//	emp.EmergencyPhoneNumbers.Add("126");
-			//	var emp2 = new Employee
-			//	{
-			//		Name = "Employee 2",
-			//		EmergencyPhoneNumbers = new List<string>(),
-			//		AssoicatedWith = dog
-			//	};
-			//	emp2.EmergencyPhoneNumbers.Add("221");
-			//	emp2.EmergencyPhoneNumbers.Add("3222");
-			//	emp2.EmergencyPhoneNumbers.Add("12324");
-			//	emp2.EmergencyPhoneNumbers.Add("12522");
-			//	emp2.EmergencyPhoneNumbers.Add("1232");
-			//	session.Save(emp);
-			//	session.Save(emp2);
-			//	var maintenance = new MaintenanceJob
-			//	{
-			//		At = DateTime.Now,
-			//		Building = building,
-			//		By = new HashSet<Employee>(),
-			//		EmpsByWork = new Dictionary<string, Employee>()
-			//	};
-			//	maintenance.EmpsByWork.Add("Employee 1", emp);
-			//	maintenance.EmpsByWork.Add("Employee 2", emp2);
-			//	maintenance.By.Add(emp);
-			//	maintenance.By.Add(emp2);
-
-			//	session.Save(maintenance);
-
-			//	session.Save(new Employee
-			//	{
-			//		AssoicatedWith = building
-			//	});
-
-
-			//	tx.Commit();
-			//}
-
-			using (var session = sessionFactory.OpenSession())
-			using (var tx = session.BeginTransaction())
+			using (var con = new SQLiteConnection("Data Source=:memory:"))
 			{
-				var building = session.Load<Building>(1);
-				building.ZipCode = "hba";
-				building.Name = "fds";
+				con.Open();
 
-				tx.Commit();
+				new SchemaExport(cfg).Execute(false, true, false, con, null);
+
+				using (var session = sessionFactory.OpenSession(con))
+				using (var tx = session.BeginTransaction())
+				{
+					session.Save(new MaintenanceJob
+					{
+						At = DateTime.Now
+					});
+
+					tx.Commit();
+				}
+
+				using (var session = sessionFactory.OpenSession(con))
+				using (var tx = session.BeginTransaction())
+				{
+					Console.WriteLine(session.Load<MaintenanceJob>(1).At);
+					tx.Commit();
+				}
 			}
 
-			Console.WriteLine("Done");
-			Console.ReadLine();
+			
+
 		}
 
 		public class MyResult
@@ -148,7 +98,7 @@ namespace NovCoure
 			var building = @event.Entity as Building;
 			if (building == null)
 				return false;
-			
+
 			var now = DateTime.Now;
 			building.ModifiedAt = now;
 			SetPropertyOnState(@event.Persister, @event.State, "ModifiedAt", now);
@@ -202,11 +152,11 @@ namespace NovCoure
 
 		}
 	}
-	
+
 
 	public class BarkingDogsWillNotBeDeleted : IDeleteEventListener
 	{
-		public  void OnDelete(DeleteEvent @event)
+		public void OnDelete(DeleteEvent @event)
 		{
 			OnDelete(@event, null);
 		}
