@@ -10,5 +10,7 @@ namespace NovCoure.Model
 		public virtual DateTime At { get; set; }
 		public virtual ICollection<Employee> By { get; set; }
 		public virtual IDictionary<string,Employee> EmpsByWork { get; set; }
+
+		public virtual IList<string> Parts { get; set; }
 	}
 }

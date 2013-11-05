@@ -1,3 +1,7 @@
+﻿                                                                     
+                                                                     
+                                                                     
+                                             
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,53 +30,102 @@ namespace NovCoure
 			cfg.DataBaseIntegration(properties =>
 			{
 				properties.Dialect<MsSql2008Dialect>();
-				properties.SchemaAction = SchemaAutoAction.Create;
-				properties.ConnectionString = @"Data Source=.\SqlExpress;Initial Catalog=Jobs;Integrated Security=true";
+				properties.SchemaAction = SchemaAutoAction.Update;
+				properties.ConnectionString = @"Data Source=localhost\sqlexpress;Initial Catalog=Jobs;Integrated Security=true";
 			});
 
 			cfg.AddAssembly(typeof(Building).Assembly);
 
 			var sessionFactory = cfg.BuildSessionFactory();
 
+			//using (var session = sessionFactory.OpenSession(new CountQueries()))
+			//using (var tx = session.BeginTransaction())
+			//{
+			//	var dog = new Dog
+			//	{
+			//		Barks = true,
+			//		Expiration = DateTime.Now,
+			//		RegistrationId = "!23213",
+			//		Attributes = new Hashtable
+			//		{
+			//			{"Fubar", "hi"}
+			//		},
+			//		Home = new Address { City = "London", Street = "Fleet" },
+			//		Vet = new Address { City = "London", Street = "Summer" },
+			//	};
+			//	session.Save(dog);
+			//	var building = new Building { Name = "Building 1" };
+			//	session.Save(building);
+			//	var emp = new Employee
+			//	{
+			//		Name = "Employee 1",
+			//		EmergencyPhoneNumbers = new List<string>(),
+			//		AssoicatedWith = dog
+			//	};
+			//	emp.EmergencyPhoneNumbers.Add("121");
+			//	emp.EmergencyPhoneNumbers.Add("122");
+			//	emp.EmergencyPhoneNumbers.Add("124");
+			//	emp.EmergencyPhoneNumbers.Add("125");
+			//	emp.EmergencyPhoneNumbers.Add("126");
+			//	var emp2 = new Employee
+			//	{
+			//		Name = "Employee 2",
+			//		EmergencyPhoneNumbers = new List<string>(),
+			//		AssoicatedWith = dog
+			//	};
+			//	emp2.EmergencyPhoneNumbers.Add("221");
+			//	emp2.EmergencyPhoneNumbers.Add("3222");
+			//	emp2.EmergencyPhoneNumbers.Add("12324");
+			//	emp2.EmergencyPhoneNumbers.Add("12522");
+			//	emp2.EmergencyPhoneNumbers.Add("1232");
+			//	session.Save(emp);
+			//	session.Save(emp2);
+			//	var maintenance = new MaintenanceJob
+			//	{
+			//		At = DateTime.Now,
+			//		Building = building,
+			//		By = new HashSet<Employee>(),
+			//		EmpsByWork = new Dictionary<string, Employee>()
+			//	};
+			//	maintenance.EmpsByWork.Add("Employee 1", emp);
+			//	maintenance.EmpsByWork.Add("Employee 2", emp2);
+			//	maintenance.By.Add(emp);
+			//	maintenance.By.Add(emp2);
+
+			//	session.Save(maintenance);
+
+			//	session.Save(new Employee
+			//	{
+			//		AssoicatedWith = building
+			//	});
+
+
+			//	tx.Commit();
+			//}
+
 			using (var session = sessionFactory.OpenSession(new CountQueries()))
 			using (var tx = session.BeginTransaction())
 			{
-				var dog = new Dog
-				{
-					Barks = true,
-					Expiration = DateTime.Now,
-					RegistrationId = "!23213",
-					Attributes = new Hashtable
-					{
-						{"Fubar", "hi"}
-					},
-					Home = new Address{City = "London", Street = "Fleet"},
-					Vet = new Address { City = "London", Street = "Summer" },
-				};
-				session.Save(dog);
-				var building = new Building{};
-				session.Save(building);
 
-				session.Save(new Employee
-				{
-					AssoicatedWith = dog
-				});
-				session.Save(new Employee
-				{
-					AssoicatedWith = building
-				});
+				var jobs = session.Query<MaintenanceJob>()
+					.Fetch(x => x.Building)
+					.FetchMany(x => x.Parts)
+					.FetchMany(x => x.By)
+						.ThenFetchMany(x => x.EmergencyPhoneNumbers)
+					.Where(x => x.Id == 1)
+					.ToList()
+					.FirstOrDefault();
 
+				Console.WriteLine("Job Id= " + jobs.Id);
+				Console.WriteLine("Building name= " + jobs.Building.Name);
+				Console.WriteLine("All Employees working there: \n");
+				jobs.By.ForEach(x => Console.WriteLine("Employee: " + x.Name + "\n"));
+
+				jobs.By.ForEach(x => Console.WriteLine("Emergency numbers: " + x.EmergencyPhoneNumbers + "\n"));
 
 				tx.Commit();
 			}
 
-			using (var session = sessionFactory.OpenSession(new CountQueries()))
-			using (var tx = session.BeginTransaction())
-			{
-				session.Get<Dog>(1).Home.City = "Barbican";
-
-				tx.Commit();
-			}
 		}
 	}
 
@@ -131,4 +184,3 @@ namespace NovCoure
 
 	}
 }
-

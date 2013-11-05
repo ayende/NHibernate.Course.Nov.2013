@@ -15,6 +15,12 @@
 			<key column="JobId"/>
 			<many-to-many class="Employee" column="EmpId"/>
 		</set>
-		
+
+		<list name="Parts" table="JobParts">
+			<key column="JobId"/>
+			<index column="Position"/>
+			<element node="PartSKU"/>
+		</list>
+
 	</class>
 </hibernate-mapping>
