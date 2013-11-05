@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Data.SQLite;
-﻿using System.Text;
+using System.Linq;
+using System.Text;
 ﻿using Iesi.Collections;
 using Newtonsoft.Json.Linq;
 using NHibernate;
 ﻿using NHibernate.Cache;
 ﻿using NHibernate.Cfg;
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 ﻿using NHibernate.Event;
-﻿using NHibernate.Persister.Entity;
+using NHibernate.Linq;
+using NHibernate.Persister.Entity;
 ﻿using NHibernate.SqlCommand;
 using NHibernate.Tool.hbm2ddl;
 using NovCoure.Model;
@@ -49,11 +52,14 @@ namespace NovCoure
 				using (var session = sessionFactory.OpenSession(con))
 				using (var tx = session.BeginTransaction())
 				{
-					session.Save(new MaintenanceJob
-					{
-						At = DateTime.Now,
-						Details = new JObject{{"Hello", "There"}}
-					});
+					var buildings = session.CreateCriteria<Building>();
+
+					var projectionList = Projections.ProjectionList();
+					projectionList.Add(Projections.Property("Id"));
+					projectionList.Add(Projections.Property("Name"));
+					buildings.SetProjection(projectionList);
+
+					buildings.List();
 
 					tx.Commit();
 				}
