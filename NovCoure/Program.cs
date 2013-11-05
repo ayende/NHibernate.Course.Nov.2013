@@ -74,6 +74,15 @@ namespace NovCoure
 		}
 	}
 
+	/// <summary>
+	///  3.33 USD
+	/// </summary>
+	public class Money
+	{
+		public string Currency { get; set; }
+		public decimal Amount { get; set; }
+	}
+
 	public class BuildingAuditListener : IPreUpdateEventListener, IPreInsertEventListener
 	{
 		public bool OnPreUpdate(PreUpdateEvent @event)
