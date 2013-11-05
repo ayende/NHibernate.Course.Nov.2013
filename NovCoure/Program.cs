@@ -17,7 +17,8 @@ using NHibernate.Dialect;
 ﻿using NHibernate.Event.Default;
 ﻿using NHibernate.Impl;
 using NHibernate.Linq;
-using NHibernate.SqlCommand;
+﻿using NHibernate.Persister.Entity;
+﻿using NHibernate.SqlCommand;
 using NovCoure.Model;
 
 namespace NovCoure
@@ -29,7 +30,7 @@ namespace NovCoure
 			App_Start.NHibernateProfilerBootstrapper.PreStart();
 
 			var cfg = new Configuration();
-			//cfg.SetInterceptor(new DontBeSlow());
+			cfg.SetInterceptor(new AuditIntercepter());
 			//cfg.SetNamingStrategy(new DbaAreFoolsToTryToUnderstandMe());
 			cfg.DataBaseIntegration(properties =>
 			{
@@ -39,7 +40,8 @@ namespace NovCoure
 			});
 
 			//cfg.SetListener(ListenerType.Delete, new BarkingDogsWillNotBeDeleted());
-
+			cfg.SetListener(ListenerType.PreUpdate, new BuildingAuditListener());
+			cfg.SetListener(ListenerType.PreInsert, new BuildingAuditListener());
 			cfg.SetListeners(ListenerType.Delete, new IDeleteEventListener[]
 			{
 				new DefaultBuildingDeleteListener(), 
@@ -127,7 +129,11 @@ namespace NovCoure
 			using (var session = sessionFactory.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				session.Delete(session.Get<Building>(5));
+				session.Save(new Building
+				{
+				});
+
+				session.Load<Building>(1).Name += 'a';
 
 				tx.Commit();
 			}
@@ -140,6 +146,42 @@ namespace NovCoure
 		{
 			public bool Barks;
 			public int Count;
+		}
+	}
+
+	public class BuildingAuditListener : IPreUpdateEventListener, IPreInsertEventListener
+	{
+		public bool OnPreUpdate(PreUpdateEvent @event)
+		{
+			var building = @event.Entity as Building;
+			if (building == null)
+				return false;
+			
+			var now = DateTime.Now;
+			building.ModifiedAt = now;
+			SetPropertyOnState(@event.Persister, @event.State, "ModifiedAt", now);
+			return false;
+			return false;
+		}
+
+		public bool OnPreInsert(PreInsertEvent @event)
+		{
+			var building = @event.Entity as Building;
+			if (building == null)
+				return false;
+
+			var now = DateTime.Now;
+			building.CreatedAt = now;
+			SetPropertyOnState(@event.Persister, @event.State, "CreatedAt", now);
+			building.ModifiedAt = now;
+			SetPropertyOnState(@event.Persister, @event.State, "ModifiedAt", now);
+			return false;
+		}
+
+		private static void SetPropertyOnState(IEntityPersister persister, object[] state, string name, DateTime value)
+		{
+			var indexOf = Array.IndexOf(persister.PropertyNames, name);
+			state[indexOf] = value;
 		}
 	}
 
@@ -218,14 +260,12 @@ namespace NovCoure
 		}
 	}
 
-	public class CountQueries : EmptyInterceptor
+	public class AuditIntercepter : EmptyInterceptor
 	{
-		private int count = 0;
 		public override SqlString OnPrepareStatement(SqlString sql)
 		{
-			//if (++count > 2)
-			//	throw new InvalidOperationException("Too many queries");
-			return base.OnPrepareStatement(sql);
+			Console.WriteLine(sql);
+			return sql;
 		}
 	}
 
