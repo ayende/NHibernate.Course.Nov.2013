@@ -103,27 +103,56 @@ namespace NovCoure
 			//	tx.Commit();
 			//}
 
-			using (var session = sessionFactory.OpenSession(new CountQueries()))
-			using (var tx = session.BeginTransaction())
+			for (int i = 0; i < 5; i++)
 			{
-
-				var jobs = session.Query<MaintenanceJob>()
-					.Fetch(x => x.Building)
-					.FetchMany(x => x.Parts)
-					.FetchMany(x => x.By)
+				using (var session = sessionFactory.OpenSession(new CountQueries()))
+				using (var tx = session.BeginTransaction())
+				{
+					var jobs = session.Query<MaintenanceJob>()
+						.Fetch(x => x.Building)
+						.FetchMany(x => x.Parts)
+						.FetchMany(x => x.By)
 						.ThenFetchMany(x => x.EmergencyPhoneNumbers)
-					.Where(x => x.Id == 1)
-					.ToList()
-					.FirstOrDefault();
+						.Where(x => x.Id == 1)
+						.ToList()
+						.FirstOrDefault();
 
-				Console.WriteLine("Job Id= " + jobs.Id);
-				Console.WriteLine("Building name= " + jobs.Building.Name);
-				Console.WriteLine("All Employees working there: \n");
-				jobs.By.ForEach(x => Console.WriteLine("Employee: " + x.Name + "\n"));
+				}
+				using (var session = sessionFactory.OpenSession(new CountQueries()))
+				using (var tx = session.BeginTransaction())
+				{
 
-				jobs.By.ForEach(x => Console.WriteLine("Emergency numbers: " + x.EmergencyPhoneNumbers + "\n"));
+					var jobs = session.Query<MaintenanceJob>()
+						.Fetch(x => x.Building)
+						.Where(x => x.Id == 1)
+						.ToFuture();
 
-				tx.Commit();
+					session.Query<MaintenanceJob>()
+						.FetchMany(x => x.Parts)
+						.Where(x => x.Id == 1)
+						.ToFuture();
+
+					session.Query<MaintenanceJob>()
+						.FetchMany(x => x.By)
+						.Where(x => x.Id == 1)
+						.ToFuture();
+
+					session.Query<Employee>()
+						.FetchMany(x => x.EmergencyPhoneNumbers)
+						.Where(x => x.Jobs.Any(j => j.Id == 1))
+						.ToFuture();
+
+					jobs.ToList();
+
+					//Console.WriteLine("Job Id= " + jobs.Id);
+					//Console.WriteLine("Building name= " + jobs.Building.Name);
+					//Console.WriteLine("All Employees working there: \n");
+					//jobs.By.ForEach(x => Console.WriteLine("Employee: " + x.Name + "\n"));
+
+					//jobs.By.ForEach(x => Console.WriteLine("Emergency numbers: " + x.EmergencyPhoneNumbers + "\n"));
+
+					tx.Commit();
+				}
 			}
 
 		}
