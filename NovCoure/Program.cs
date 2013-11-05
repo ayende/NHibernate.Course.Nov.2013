@@ -42,7 +42,7 @@ namespace NovCoure
 
 			cfg.SetListeners(ListenerType.Delete, new IDeleteEventListener[]
 			{
-				new BarkingDogsWillNotBeDeleted(),
+				new DefaultBuildingDeleteListener(), 
 				new DefaultDeleteEventListener()
 			});
 
@@ -127,10 +127,13 @@ namespace NovCoure
 			using (var session = sessionFactory.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				session.Delete(session.Get<Dog>(1));
+				session.Delete(session.Get<Building>(4));
 
 				tx.Commit();
 			}
+
+			Console.WriteLine("Done");
+			Console.ReadLine();
 		}
 
 		public class MyResult
@@ -139,6 +142,31 @@ namespace NovCoure
 			public int Count;
 		}
 	}
+
+	public class DefaultBuildingDeleteListener : IDeleteEventListener
+	{
+		public void OnDelete(DeleteEvent @event)
+		{
+			OnDelete(@event, null);
+		}
+
+		public void OnDelete(DeleteEvent @event, ISet transientEntities)
+		{
+			var building = @event.Entity as Building;
+
+			if (building == null)
+				return;
+
+			if (building.Id == 1)
+				throw new InvalidOperationException("Cannot delete default");
+
+			foreach (var maintenanceJob in building.Jobs)
+			{
+				maintenanceJob.Building = @event.Session.Load<Building>(1);
+			}
+		}
+	}
+	
 
 	public class BarkingDogsWillNotBeDeleted : IDeleteEventListener
 	{
