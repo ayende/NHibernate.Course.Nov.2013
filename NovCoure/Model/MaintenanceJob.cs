@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace NovCoure.Model
 {
@@ -11,7 +12,7 @@ namespace NovCoure.Model
 		public virtual DateTime At { get; set; }
 		public virtual ICollection<Employee> By { get; set; }
 		public virtual IDictionary<string,Employee> EmpsByWork { get; set; }
-
+		public virtual dynamic Details { get; set; }
 		public virtual IList<string> Parts { get; set; }
 	}
 }

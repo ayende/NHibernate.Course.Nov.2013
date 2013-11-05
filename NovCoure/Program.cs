@@ -1,16 +1,17 @@
 ﻿using System;
-﻿using System.Data.SQLite;
+using System.Data.SQLite;
 ﻿using System.Text;
 ﻿using Iesi.Collections;
-﻿using NHibernate;
+using Newtonsoft.Json.Linq;
+using NHibernate;
 ﻿using NHibernate.Cache;
 ﻿using NHibernate.Cfg;
 using NHibernate.Dialect;
 ﻿using NHibernate.Event;
 ﻿using NHibernate.Persister.Entity;
 ﻿using NHibernate.SqlCommand;
-﻿using NHibernate.Tool.hbm2ddl;
-﻿using NovCoure.Model;
+using NHibernate.Tool.hbm2ddl;
+using NovCoure.Model;
 
 namespace NovCoure
 {
@@ -50,7 +51,8 @@ namespace NovCoure
 				{
 					session.Save(new MaintenanceJob
 					{
-						At = DateTime.Now
+						At = DateTime.Now,
+						Details = new JObject{{"Hello", "There"}}
 					});
 
 					tx.Commit();
@@ -59,13 +61,10 @@ namespace NovCoure
 				using (var session = sessionFactory.OpenSession(con))
 				using (var tx = session.BeginTransaction())
 				{
-					Console.WriteLine(session.Load<MaintenanceJob>(1).At);
+					Console.WriteLine(session.Load<MaintenanceJob>(1).Details.Hello);
 					tx.Commit();
 				}
 			}
-
-			
-
 		}
 
 		public class MyResult
