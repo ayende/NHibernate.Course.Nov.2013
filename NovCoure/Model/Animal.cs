@@ -1,10 +1,18 @@
-﻿namespace NovCoure.Model
+﻿using System;
+using System.Collections;
+
+namespace NovCoure.Model
 {
 	public class Animal
 	{
+		public virtual int Version { get; set; }
 		public virtual int Id { get; set; }
 		public virtual Address Home { get; set; }
 		public virtual Address Vet { get; set; }
+		public virtual IDictionary Attributes { get; set; }
+
+		public virtual DateTime Expiration { get; set; }
+		public virtual string RegistrationId { get; set; }
 	}
 
 	public class Address

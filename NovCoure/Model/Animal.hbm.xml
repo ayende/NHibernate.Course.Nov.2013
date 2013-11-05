@@ -3,10 +3,11 @@
 				   assembly="NovCoure"
 				   namespace="NovCoure.Model">
 
-	<class name="Animal" abstract="true" table="Animals">
+	<class name="Dog" abstract="true" table="Dogs">
 		<id name="Id">
-			<generator class="hilo"/>
+			<generator class="identity"/>
 		</id>
+		<version name="Version" />
 
 		<component name="Home">
 			<property name="City" column="HomeCity"/>
@@ -18,19 +19,18 @@
 			<property name="Street" column="VetStreet"/>
 		</component>
 
-		<!--<property name="HomeCity"/>
-		<property name="HomeStreet"/>
+		<dynamic-component name="Attributes">
+			<property name="Fubar" type="String" column="ThisIsMy_Fubar"/>
+		</dynamic-component>
 
-		<property name="VetCity"/>
-		<property name="VetStreet"/>-->
 
-		<union-subclass name="Dog" table="Dogs">
-			<property name="Barks"/>
-		</union-subclass>
+		<join table="AnimalRegistrations">
+			<key column="AnimalId"/>
+			<property name="RegistrationId"/>
+			<property name="Expiration"/>
+		</join>
 
-		<union-subclass name="Cat" table="Cats">
-			<property name="Annoying"/>
-		</union-subclass>
+
 
 	</class>
 

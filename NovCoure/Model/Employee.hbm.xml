@@ -26,5 +26,15 @@
 			<index column="MapKey" type="String"/>
 			<element column="MapVal" type="String"/>
 		</map>
+
+		<any name="AssoicatedWith" id-type="Int32" meta-type="string">
+			<meta-value value="Dog" class="Dog"/>
+			<meta-value value="Building" class="Building"/>
+			
+			<column name="AssoicatedWithType"/>
+			<column name="AssoicatedWithId"/>
+
+		</any>
+
 	</class>
 </hibernate-mapping>

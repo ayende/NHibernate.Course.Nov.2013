@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using NHibernate;
@@ -35,18 +37,31 @@ namespace NovCoure
 			using (var session = sessionFactory.OpenSession(new CountQueries()))
 			using (var tx = session.BeginTransaction())
 			{
-				session.Save(new Dog
+				var dog = new Dog
 				{
 					Barks = true,
+					Expiration = DateTime.Now,
+					RegistrationId = "!23213",
+					Attributes = new Hashtable
+					{
+						{"Fubar", "hi"}
+					},
 					Home = new Address{City = "London", Street = "Fleet"},
 					Vet = new Address { City = "London", Street = "Summer" },
-				});
-				session.Save(new Cat
+				};
+				session.Save(dog);
+				var building = new Building{};
+				session.Save(building);
+
+				session.Save(new Employee
 				{
-					Annoying = true,
-					Home = new Address(),
-					Vet = null
+					AssoicatedWith = dog
 				});
+				session.Save(new Employee
+				{
+					AssoicatedWith = building
+				});
+
 
 				tx.Commit();
 			}
@@ -54,10 +69,8 @@ namespace NovCoure
 			using (var session = sessionFactory.OpenSession(new CountQueries()))
 			using (var tx = session.BeginTransaction())
 			{
+				session.Get<Dog>(1).Home.City = "Barbican";
 
-				session.Query<Animal>().ToList();
-				session.Query<Dog>().ToList();
-				session.Query<Cat>().ToList();
 				tx.Commit();
 			}
 		}
@@ -101,8 +114,8 @@ namespace NovCoure
 		private int count = 0;
 		public override SqlString OnPrepareStatement(SqlString sql)
 		{
-			if (++count > 2)
-				throw new InvalidOperationException("Too many queries");
+			//if (++count > 2)
+			//	throw new InvalidOperationException("Too many queries");
 			return base.OnPrepareStatement(sql);
 		}
 	}
