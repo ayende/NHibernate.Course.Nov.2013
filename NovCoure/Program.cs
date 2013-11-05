@@ -8,10 +8,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using NHibernate;
-using NHibernate.Cfg;
+﻿using Iesi.Collections;
+﻿using NHibernate;
+﻿using NHibernate.Cache;
+﻿using NHibernate.Cfg;
 using NHibernate.Dialect;
-using NHibernate.Impl;
+﻿using NHibernate.Event;
+﻿using NHibernate.Event.Default;
+﻿using NHibernate.Impl;
 using NHibernate.Linq;
 using NHibernate.SqlCommand;
 using NovCoure.Model;
@@ -34,7 +38,24 @@ namespace NovCoure
 				properties.ConnectionString = @"Data Source=localhost\sqlexpress;Initial Catalog=Jobs;Integrated Security=true";
 			});
 
-			cfg.AddAssembly(typeof(Building).Assembly);
+			//cfg.SetListener(ListenerType.Delete, new BarkingDogsWillNotBeDeleted());
+
+			cfg.SetListeners(ListenerType.Delete, new IDeleteEventListener[]
+			{
+				new BarkingDogsWillNotBeDeleted(),
+				new DefaultDeleteEventListener()
+			});
+
+			// secret: make nhibernate faster toggle
+			cfg.SetProperty("default_batch_fetch_size", "15");
+
+			cfg.Cache(properties =>
+			{
+				properties.UseQueryCache = true;
+				properties.Provider<HashtableCacheProvider>();
+			});
+
+			cfg.AddAssembly(typeof (Building).Assembly);
 
 			var sessionFactory = cfg.BuildSessionFactory();
 
@@ -103,58 +124,34 @@ namespace NovCoure
 			//	tx.Commit();
 			//}
 
-			for (int i = 0; i < 5; i++)
+			using (var session = sessionFactory.OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				using (var session = sessionFactory.OpenSession(new CountQueries()))
-				using (var tx = session.BeginTransaction())
-				{
-					var jobs = session.Query<MaintenanceJob>()
-						.Fetch(x => x.Building)
-						.FetchMany(x => x.Parts)
-						.FetchMany(x => x.By)
-						.ThenFetchMany(x => x.EmergencyPhoneNumbers)
-						.Where(x => x.Id == 1)
-						.ToList()
-						.FirstOrDefault();
+				session.Delete(session.Get<Dog>(1));
 
-				}
-				using (var session = sessionFactory.OpenSession(new CountQueries()))
-				using (var tx = session.BeginTransaction())
-				{
-
-					var jobs = session.Query<MaintenanceJob>()
-						.Fetch(x => x.Building)
-						.Where(x => x.Id == 1)
-						.ToFuture();
-
-					session.Query<MaintenanceJob>()
-						.FetchMany(x => x.Parts)
-						.Where(x => x.Id == 1)
-						.ToFuture();
-
-					session.Query<MaintenanceJob>()
-						.FetchMany(x => x.By)
-						.Where(x => x.Id == 1)
-						.ToFuture();
-
-					session.Query<Employee>()
-						.FetchMany(x => x.EmergencyPhoneNumbers)
-						.Where(x => x.Jobs.Any(j => j.Id == 1))
-						.ToFuture();
-
-					jobs.ToList();
-
-					//Console.WriteLine("Job Id= " + jobs.Id);
-					//Console.WriteLine("Building name= " + jobs.Building.Name);
-					//Console.WriteLine("All Employees working there: \n");
-					//jobs.By.ForEach(x => Console.WriteLine("Employee: " + x.Name + "\n"));
-
-					//jobs.By.ForEach(x => Console.WriteLine("Emergency numbers: " + x.EmergencyPhoneNumbers + "\n"));
-
-					tx.Commit();
-				}
+				tx.Commit();
 			}
+		}
 
+		public class MyResult
+		{
+			public bool Barks;
+			public int Count;
+		}
+	}
+
+	public class BarkingDogsWillNotBeDeleted : IDeleteEventListener
+	{
+		public  void OnDelete(DeleteEvent @event)
+		{
+			OnDelete(@event, null);
+		}
+
+		public void OnDelete(DeleteEvent @event, ISet transientEntities)
+		{
+			var dog = @event.Entity as Dog;
+			if (dog != null && dog.Barks)
+				throw new ApplicationException("Why you delete me? I'll stop barking!");
 		}
 	}
 

@@ -8,8 +8,10 @@
 			<generator class="identity"/>
 		</id>
 		<version name="Version" />
+		<property name="Barks"/>
 
-		<component name="Home">
+
+		<!--<component name="Home">
 			<property name="City" column="HomeCity"/>
 			<property name="Street" column="HomeStreet"/>
 		</component>
@@ -28,7 +30,7 @@
 			<key column="AnimalId"/>
 			<property name="RegistrationId"/>
 			<property name="Expiration"/>
-		</join>
+		</join>-->
 
 
 
