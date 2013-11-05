@@ -1,32 +1,16 @@
-﻿                                                                     
-                                                                     
-                                                                     
-                                             
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
 ﻿using System.Data.SQLite;
-﻿using System.Linq;
-using System.Text;
+﻿using System.Text;
 ﻿using Iesi.Collections;
-﻿using Lucene.Net.Analysis;
 ﻿using NHibernate;
 ﻿using NHibernate.Cache;
 ﻿using NHibernate.Cfg;
 using NHibernate.Dialect;
 ﻿using NHibernate.Event;
-﻿using NHibernate.Event.Default;
-﻿using NHibernate.Impl;
-using NHibernate.Linq;
 ﻿using NHibernate.Persister.Entity;
-﻿using NHibernate.Search;
-﻿using NHibernate.Search.Event;
-﻿using NHibernate.Search.Store;
 ﻿using NHibernate.SqlCommand;
 ﻿using NHibernate.Tool.hbm2ddl;
 ﻿using NovCoure.Model;
-﻿using Environment = NHibernate.Search.Environment;
 
 namespace NovCoure
 {
